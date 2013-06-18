@@ -13,7 +13,6 @@ typedef std::wstring TSWString;
 
 // 定义TS实例类型
 enum EN_TS_Type{
-    TS_Type_Min,
     TS_var,             //动态变量
     TS_int,             //整形
     TS_float,           //浮点数
@@ -29,7 +28,6 @@ enum EN_TS_Type{
 
 // 定义TS类规则
 enum EN_TS_ClassRule{
-    TS_ClassRule_Min,
     TS_ClassPublic,     //公有
     TS_ClassProtect,    //保护
     TS_ClassPrivate,    //私有
@@ -55,10 +53,44 @@ public:
 
 class TSEngine {
 public:
+    TSEngine(){
+        char* TSLangType[8] = {"var","int","float","double","int64","string","wstring","class"};
+        for (int i = 0 ; i < 8 ; i++) {
+            m_sTSLangType.insert(std::string(TSLangType[i]));
+        }
+    }
+
+    int TST_StringFilt(std::string& lpszString, char szSeps, std::vector<std::string>& tArray)
+    {
+        char* pTok = NULL;
+        char* sz = new char[lpszString.length() + 2];
+        strcpy(sz, lpszString.c_str());
+        pTok = strtok(sz, &szSeps);
+        while ( pTok )
+        {
+            tArray.push_back(pTok);
+            pTok = strtok(NULL, &szSeps);
+        }
+
+        if (tArray.size() == 0)
+        {
+            tArray.push_back(lpszString);
+        }
+
+        delete [] sz;
+        return 0;
+    }
+
+    void RunPrograme() {
+
+    }
+
+    void GetLineType(str){
+
+    }
+
     void RunLine(TSString& str) {
         std::cout << str << std::endl;
-
-
 
     }
 
@@ -82,11 +114,14 @@ public:
             }
         }
     }
+
+private:
+    TSSet<TSString> m_sTSLangType; //用于比对类型字符串
 };
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
-    TSString oneLine = "            int a = 50; a=60;";
+    TSString oneLine = "int a = 50; a = 60; CA ca = new CA(); ca.haha = 50; main";
 
     TSEngine tse;
     tse.RunFile(oneLine);
