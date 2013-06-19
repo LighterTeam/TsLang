@@ -13,8 +13,15 @@ typedef std::wstring TSWString;
 #define TSSet std::set
 #define TSVector std::vector
 
+// Error定义
+enum HRESULT {
+    S_OK,
+    S_ERROR
+};
+
 // 定义TS实例类型
 enum EN_TS_Type{
+    TS_Type_Min,
     TS_var,             //动态变量
     TS_int,             //整形
     TS_float,           //浮点数
@@ -31,6 +38,7 @@ enum EN_TS_Type{
 
 // 定义TS类规则
 enum EN_TS_ClassRule{
+    TS_ClassRule_Min,
     TS_ClassPublic,     //公有
     TS_ClassProtect,    //保护
     TS_ClassPrivate,    //私有

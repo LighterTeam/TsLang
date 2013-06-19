@@ -8,7 +8,7 @@ void TSPrint(TSString str){
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
-    TSString oneLine = " class CA{public: void haha(){string str = \"HelloClass\"; print(str)} }  void        print  ( string   str )   {    os.print(str);   }   print ( \"Hellod&^%#$*&&(*( )) World!\" )  ;";
+    TSString oneLine = " class CA{public: void haha(){ if (a == 50) { print(\"hahaha\") }  string str = \"HelloClass\"; print(str);} private: int a = 50; int b;}  void        print  ( string   str )   {    os.print(str);   }   print ( \"Hellod&^%#$*&&(*( )) World!\" )  ;";
 
     TSEngine tse;
     tse.DoString(oneLine);
