@@ -16,7 +16,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    TSObject.cpp
+    TSObject.cpp \
+    TSEngine.cpp \
+    TSDefine.cpp
 
 HEADERS += \
-    TSObject.h
+    TSObject.h \
+    TSEngine.h \
+    TSDefine.h \
+    TSCommon.h
