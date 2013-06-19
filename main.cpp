@@ -10,6 +10,7 @@ typedef std::string TSString;
 typedef std::wstring TSWString;
 #define TSMap std::map
 #define TSSet std::set
+#define TSVector std::vector
 
 // 定义TS实例类型
 enum EN_TS_Type{
@@ -23,6 +24,7 @@ enum EN_TS_Type{
     TS_class,           //类
     TS_interface,       //接口
     TS_Function,        //函数
+    TS_Void,            //无类型
     TS_Type_Max
 };
 
@@ -51,46 +53,39 @@ public:
     TSMap<EN_TS_ClassRule, TSMap<EN_TS_Type, TSSet<TSObject*>>> m_Info;
 };
 
+//第一个内置函数
+void TSPrint(TSString str){
+    std::cout << "TS: " << str << std::endl;
+}
+
 class TSEngine {
 public:
     TSEngine(){
         char* TSLangType[8] = {"var","int","float","double","int64","string","wstring","class"};
         for (int i = 0 ; i < 8 ; i++) {
-            m_sTSLangType.insert(std::string(TSLangType[i]));
-        }
-    }
-
-    int TST_StringFilt(std::string& lpszString, char szSeps, std::vector<std::string>& tArray)
-    {
-        char* pTok = NULL;
-        char* sz = new char[lpszString.length() + 2];
-        strcpy(sz, lpszString.c_str());
-        pTok = strtok(sz, &szSeps);
-        while ( pTok )
-        {
-            tArray.push_back(pTok);
-            pTok = strtok(NULL, &szSeps);
+            m_sTSLangType.insert(TSString(TSLangType[i]));
         }
 
-        if (tArray.size() == 0)
-        {
-            tArray.push_back(lpszString);
-        }
+        char* TSLangSymbol[11] = {"(",")","{","}","+","-","*","/","%",";",":"};
 
-        delete [] sz;
-        return 0;
+        for (int i = 0 ; i < 11 ; i++) {
+            m_sTSLangSymbol.insert(TSString(TSLangSymbol[i]));
+        }
     }
 
     void RunPrograme() {
 
     }
 
-    void GetLineType(str){
+    void GetLineType(TSString& str){
+
+    }
+
+    void CallFunction(TSVector<TSString>& vctObj) {
 
     }
 
     void RunLine(TSString& str) {
-        std::cout << str << std::endl;
 
     }
 
@@ -98,30 +93,71 @@ public:
         int i = 0;
         char c = str[i];
         TSString line;
-        int begin = 0;
-        while((int)str.size() > i) {
+        bool once = false;
+        bool stringprocess = false;
+        while(str.size() > i) {
             c = str[i];
             i ++;
-            if(begin == 0 && (c == ' ' || c == '\11' || c == '\n')){
+
+            if ( c == '\"' ) {
+                if (stringprocess){
+                    stringprocess = false;
+                    m_FileTranslate.push_back(line);
+                    m_FileTranslate.push_back(TSString("")+c);
+                    TSPrint(line);
+                    TSPrint(TSString("")+c);
+                    line = "";
+                } else {
+                    stringprocess = true;
+                    m_FileTranslate.push_back(TSString("")+c);
+                    TSPrint(TSString("")+c);
+                    line = "";
+                }
                 continue;
             }
-            begin = 1;
-            line += c;
-            if (c == ';') {
-                RunLine(line);
-                line = "";
-                begin = 0;
+
+            if(stringprocess){
+                line += c;
+                continue;
             }
+
+            if ( c == ' ' || c == '\t'){
+                if(once){
+                    m_FileTranslate.push_back(line);
+                    TSPrint(line);
+                    once = false;
+                    line = "";
+                }
+                continue;
+            }
+            else if ( m_sTSLangSymbol.count(TSString("")+c) ){
+                if(line != ""){
+                    m_FileTranslate.push_back(line);
+                    TSPrint(line);
+                }
+                m_FileTranslate.push_back(TSString("")+c);
+                TSPrint(TSString("")+c);
+                once = false;
+                line = "";
+                continue;
+            }
+
+            once = true;
+            line += c;
         }
     }
 
 private:
     TSSet<TSString> m_sTSLangType; //用于比对类型字符串
+    TSSet<TSString> m_sTSLangSymbol; //用于比对符号字符串
+    TSVector<TSString> m_FileTranslate; //文章转义
 };
+
+
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
-    TSString oneLine = "int a = 50; a = 60; CA ca = new CA(); ca.haha = 50; main";
+    TSString oneLine = "   void        print  ( string   str )   {    os.print(str);   }   print ( \"Hellod&^%#$*&&(*( )) World!\" )  ;";
 
     TSEngine tse;
     tse.RunFile(oneLine);
