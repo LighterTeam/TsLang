@@ -22,7 +22,7 @@ public:
 
 class TSFunctionObject : public TSObject{
 public:
-    EN_TS_Type m_iTypeReturn; //返回值类型
+    TSString m_sTypeReturn; //返回值类型
     TSVector<TSObject*> m_toParameter;  //参数
     TSMap<EN_TS_Type, TSSet<TSObject*>> m_Info;
     TSVector<TSString> m_Body;

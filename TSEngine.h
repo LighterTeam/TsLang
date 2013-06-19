@@ -10,12 +10,13 @@ public:
     void TSPrint(TSString str);
     void DoString(TSString& str);
     void DoFile(TSString path);
-   
+    
+    
 private:
     HRESULT CompilationLanguage(TSString &str, std::vector<TSString> &fileTranslate);
     HRESULT DoLanguage(std::vector<TSString> &fileTranslate); //把翻译过来的语句.增加到VM中.
     EN_TS_Type GetType(TSString &str);
-    TSFunctionObject *ProcessFunc(std::vector<TSString>::iterator &iter);
+    TSFunctionObject *ProcessFunc(std::vector<TSString>::iterator &iter, int &offset);
         
 private:
     TSSet<TSString> m_sTSLangType; //用于比对类型字符串

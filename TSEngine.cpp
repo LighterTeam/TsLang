@@ -103,9 +103,6 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString> &fileTranslate) {
     int curStack = 0;
     EN_TS_ClassRule curClassRule = TS_ClassRule_Min;
 
-    //临时函数处理
-    TSObject* pFunc = nullptr;
-
     //全局Obj.
     TSObject* pObj = nullptr;
     for (auto iter = fileTranslate.begin(); iter != fileTranslate.end(); iter++) {
@@ -155,7 +152,9 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString> &fileTranslate) {
                     if(m_sTSLangType.count(info)) {
                         if(*(iter+2) == "("){ //判定为函数
                             TSPrint("Fun:" + *(iter+1));
-                            ProcessFunc(iter);
+                            int offset = 0;
+                            TSFunctionObject* _pO = ProcessFunc(iter, offset);
+                            pCO->m_Info[curClassRule][TS_int].insert(_pO);
                         } else if (*(iter+2) == "=") { //判定为变量声明
                             TSPrint("Instanse:" + *(iter+0) + "," + *(iter+1) + "," + *(iter+2) + "," + *(iter+3));
                             TSBaseObject* _pO = new TSBaseObject();
@@ -180,8 +179,12 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString> &fileTranslate) {
     return S_OK;
 }
 
-TSFunctionObject* TSEngine::ProcessFunc(std::vector<TSString>::iterator& iter){
+TSFunctionObject* TSEngine::ProcessFunc(std::vector<TSString>::iterator& iter, int& offset){
     TSFunctionObject* pFo = new TSFunctionObject();
+    pFo->m_sTypeReturn = *(iter);
+    pFo->m_iType = TS_function;
+    pFo->m_sName = *(iter + 1);
+    
     int i = 2;
     int stack = 0;
     
@@ -226,6 +229,7 @@ TSFunctionObject* TSEngine::ProcessFunc(std::vector<TSString>::iterator& iter){
             }
         }
         else {
+            pFo->m_Body.push_back(info);
             if (info == "{") {
                 stack++;
             } else if (info == "}") {
@@ -234,9 +238,9 @@ TSFunctionObject* TSEngine::ProcessFunc(std::vector<TSString>::iterator& iter){
                     break;
                 }
             }
-            pFo->m_Body.push_back(info);
         }
     }
+    offset = i;
     return pFo;
 }
 
