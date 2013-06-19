@@ -18,7 +18,13 @@ void TSEngine::TSPrint(TSString str){
     std::cout << "Sys: " << str << std::endl;
 }
 
-void TSEngine::CompilationLanguage(TSString& str){
+void TSEngine::DoString(TSString &str)
+{
+    TSVector<TSString> fileTranslate; //文章转义
+    CompilationLanguage(str, fileTranslate);
+}
+
+void TSEngine::CompilationLanguage(TSString& str, TSVector<TSString>& fileTranslate){
     int i = 0;
     char c = str[i];
     TSString line;
@@ -31,14 +37,14 @@ void TSEngine::CompilationLanguage(TSString& str){
         if ( c == '\"' ) {
             if (stringprocess){
                 stringprocess = false;
-                m_FileTranslate.push_back(line);
-                m_FileTranslate.push_back(TSString("")+c);
+                fileTranslate.push_back(line);
+                fileTranslate.push_back(TSString("")+c);
                 TSPrint(line);
                 TSPrint(TSString("")+c);
                 line = "";
             } else {
                 stringprocess = true;
-                m_FileTranslate.push_back(TSString("")+c);
+                fileTranslate.push_back(TSString("")+c);
                 TSPrint(TSString("")+c);
                 line = "";
             }
@@ -52,7 +58,7 @@ void TSEngine::CompilationLanguage(TSString& str){
 
         if ( c == ' ' || c == '\t'){
             if(once){
-                m_FileTranslate.push_back(line);
+                fileTranslate.push_back(line);
                 TSPrint(line);
                 once = false;
                 line = "";
@@ -61,10 +67,10 @@ void TSEngine::CompilationLanguage(TSString& str){
         }
         else if ( m_sTSLangSymbol.count(TSString("")+c) ){
             if(line != ""){
-                m_FileTranslate.push_back(line);
+                fileTranslate.push_back(line);
                 TSPrint(line);
             }
-            m_FileTranslate.push_back(TSString("")+c);
+            fileTranslate.push_back(TSString("")+c);
             TSPrint(TSString("")+c);
             once = false;
             line = "";

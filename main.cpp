@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     TSString oneLine = " class CA{public: void haha(){string str = \"HelloClass\"; print(str)} }  void        print  ( string   str )   {    os.print(str);   }   print ( \"Hellod&^%#$*&&(*( )) World!\" )  ;";
 
     TSEngine tse;
-    tse.CompilationLanguage(oneLine);
+    tse.DoString(oneLine);
 
     return a.exec();
 }
