@@ -31,8 +31,8 @@ enum EN_TS_Type{
     TS_wstring,         //宽字符UTF-16
     TS_class,           //类
     TS_interface,       //接口
-    TS_Function,        //函数
-    TS_Void,            //无类型
+    TS_function,        //函数
+    TS_void,            //无类型
     TS_Type_Max
 };
 
