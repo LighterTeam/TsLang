@@ -4,7 +4,9 @@
 #include "TSDefine.h"
 
 // 类型基类
-class TSObject{
+class TSBase{};
+
+class TSObject : public TSBase{
 public:
     EN_TS_Type m_iType;
     TSString m_sName;
