@@ -51,6 +51,8 @@ HRESULT TSEngine::RunScript(TSVector<TSString>& runLine) {
 }
 
 HRESULT TSEngine::RunFunction(TSFunctionObject* pOF, TSVector<TSString>::iterator& iter, int& offset){
+    TSEvent* pEvent = TSEvent::GetSingleTon();
+    
     int index = 1;
     TSVector<TSString> vParam;
     while(true) {
@@ -72,6 +74,7 @@ HRESULT TSEngine::RunFunction(TSFunctionObject* pOF, TSVector<TSString>::iterato
             vParam.push_back(info);
         }
     }
+    offset = --index; //Must!!!
     
     if (vParam.size() != pOF->m_toParameter.size()) {
         return S_ERROR;
@@ -101,9 +104,12 @@ HRESULT TSEngine::RunFunction(TSFunctionObject* pOF, TSVector<TSString>::iterato
             }
         }
         
+        if("os_print" == info){
+            TSBaseObject* pOB = (TSBaseObject*)pOF->m_toParameter[0];
+            pEvent->SendMsg(info, pOB->m_Value);
+        }
     }
     
-    offset = --index;
     return S_OK;
 }
 
