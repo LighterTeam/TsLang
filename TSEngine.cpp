@@ -71,7 +71,7 @@ HRESULT TSEngine::CompilationLanguage(TSString& str,
             if(once){
                 fileTranslate.push_back(line);
                 TSPrint(line);
-                once = false;
+                once = false;  
                 line = "";
             }
             continue;
@@ -112,9 +112,35 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString> &fileTranslate) {
                 std::cout << "pObj == nullptr" << std::endl;
                 return S_ERROR;
             }
-        } else if (info == "class"){
+        } else if (info == "class"){ //判定为类声明
             curType = TS_class;
             pObj = new TSClassObject();
+            continue;
+        } else if(m_sTSLangType.count(info)) {
+            int offset = 0;
+            if(*(iter+2) == "("){ //判定为函数
+                TSPrint("Fun:" + *(iter+1));
+                TSFunctionObject* _pO = ProcessFunc(iter, offset);
+                m_TypeList[_pO->m_sName] = _pO;
+                offset --;
+            } else if (*(iter+2) == "=") { //判定为变量声明
+                TSPrint("Instanse:" + *(iter+0) + "," + *(iter+1) + "," + *(iter+2) + "," + *(iter+3));
+                TSBaseObject* _pO = new TSBaseObject();
+                _pO->m_iType = GetType(info);
+                _pO->m_sName = *(iter+1);
+                _pO->m_Value = *(iter+3);
+                m_TypeList[_pO->m_sName] = _pO;
+                offset = 4;
+            } else if (*(iter+2) == ";") { //判定为变量声明
+                TSPrint("Instanse:" + *(iter+0) + "," + *(iter+1) + "," + *(iter+2));                            
+                TSBaseObject* _pO = new TSBaseObject();
+                _pO->m_iType = GetType(info);
+                _pO->m_sName = *(iter+1);
+                _pO->m_Value = "0";
+                m_TypeList[_pO->m_sName] = _pO;
+                offset = 2;
+            }
+            iter += offset;
             continue;
         }
 
