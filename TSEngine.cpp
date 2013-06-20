@@ -12,7 +12,6 @@ TSEngine::TSEngine()
         m_sTSLangBaseType.insert(TSString(TSLangType[i]));
     }
     
-
     char* TSLangSymbol[12] = {"(",")","{","}","+","-","*","/","%",";",":",","};
     for (int i = 0 ; i < 12 ; i++) {
         m_sTSLangSymbol.insert(TSString(TSLangSymbol[i]));
@@ -150,11 +149,12 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString> &fileTranslate) {
                 }
                 if (curClassRule != TS_ClassRule_Min){
                     if(m_sTSLangType.count(info)) {
+                        int offset = 0;
                         if(*(iter+2) == "("){ //判定为函数
                             TSPrint("Fun:" + *(iter+1));
-                            int offset = 0;
                             TSFunctionObject* _pO = ProcessFunc(iter, offset);
                             pCO->m_Info[curClassRule][TS_int].insert(_pO);
+                            offset --;
                         } else if (*(iter+2) == "=") { //判定为变量声明
                             TSPrint("Instanse:" + *(iter+0) + "," + *(iter+1) + "," + *(iter+2) + "," + *(iter+3));
                             TSBaseObject* _pO = new TSBaseObject();
@@ -162,6 +162,7 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString> &fileTranslate) {
                             _pO->m_sName = *(iter+1);
                             _pO->m_Value = *(iter+3);
                             pCO->m_Info[curClassRule][TS_int].insert(_pO);
+                            offset = 4;
                         } else if (*(iter+2) == ";") { //判定为变量声明
                             TSPrint("Instanse:" + *(iter+0) + "," + *(iter+1) + "," + *(iter+2));                            
                             TSBaseObject* _pO = new TSBaseObject();
@@ -169,7 +170,9 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString> &fileTranslate) {
                             _pO->m_sName = *(iter+1);
                             _pO->m_Value = "0";
                             pCO->m_Info[curClassRule][TS_int].insert(_pO);
+                            offset = 2;
                         }
+                        iter += offset;
                     }
                 }
                 break;
@@ -201,7 +204,12 @@ TSFunctionObject* TSEngine::ProcessFunc(std::vector<TSString>::iterator& iter, i
             if (info == "(") {
 
             } else {
-                if (bParaOnce_PO) {
+                if (info == ")") {
+                    pFo->m_toParameter.push_back(pO);
+                    bParaOnce = false;
+                    stackPO = 0;
+                }
+                else if (bParaOnce_PO) {
                     if (m_sTSLangBaseType.count(info)){
                         pO = new TSBaseObject();
                         pO->m_iType = GetType(info);
@@ -219,11 +227,6 @@ TSFunctionObject* TSEngine::ProcessFunc(std::vector<TSString>::iterator& iter, i
                 else if (info == ",") {
                     pFo->m_toParameter.push_back(pO);
                     bParaOnce_PO = true;
-                    stackPO = 0;
-                }
-                else if (info == ")") {
-                    pFo->m_toParameter.push_back(pO);
-                    bParaOnce = false;
                     stackPO = 0;
                 }
             }
