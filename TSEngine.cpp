@@ -205,7 +205,11 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString>& fileTranslate, TSVector<TSSt
                 TSFunctionObject* _pO = ProcessFunc(iter, offset);
                 m_TypeList[_pO->m_sName] = _pO;
                 offset --;
-            } else if (*(iter+2) == "=") { //判定为变量声明
+            } 
+            else {
+                runLine.push_back(info);
+            }
+            /*else if (*(iter+2) == "=") { //判定为变量声明
                 TSPrint("Instanse:" + *(iter+0) + "," + *(iter+1) + "," + *(iter+2) + "," + *(iter+3));
                 TSBaseObject* _pO = new TSBaseObject();
                 _pO->m_iType = GetType(info);
@@ -221,7 +225,7 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString>& fileTranslate, TSVector<TSSt
                 _pO->m_Value = "0";
                 m_TypeList[_pO->m_sName] = _pO;
                 offset = 2;
-            }
+            }*/
             iter += offset;
             continue;
         }
