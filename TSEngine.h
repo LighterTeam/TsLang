@@ -4,6 +4,8 @@
 #include "TSDefine.h"
 #include "TSObject.h"
 
+
+
 class TSEngine {
 public:
     TSEngine();
@@ -29,6 +31,7 @@ private:
     TSMap<TSString, TSObject*> m_TypeList; //用户定义的类型
     int m_iStackDeep;
     TSVector<TSVector<TSString>> m_vStacks;
+
 };
 
 #endif // TSENGINE_H

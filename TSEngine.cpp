@@ -38,13 +38,16 @@ HRESULT TSEngine::RunScript(TSVector<TSString>& runLine) {
     int offset = 0;
     for (auto iter = runLine.begin(); iter != runLine.end(); iter++) {
         TSString& info = *iter;
-        if(m_TypeList.count(info)){
+        if(m_TypeList.count(info)){ //如果是自定义的类型
             TSObject* pObj = m_TypeList[info];
             if(pObj->m_iType == TS_function){
                 TSFunctionObject* pOF = (TSFunctionObject*)pObj;
                 RunFunction(pOF, iter, offset);
                 iter += offset;
             }
+        } 
+        else if (m_sTSLangBaseType.count(info)) { //如果是基础类型
+
         }
     }
     return S_OK;
