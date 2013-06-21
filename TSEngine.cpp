@@ -13,8 +13,8 @@ TSEngine::TSEngine() : m_iStackDeep(0)
         m_sTSLangBaseType.insert(TSString(TSLangType[i]));
     }
     
-    char* TSLangSymbol[14] = {"(",")","{","}","+","-","*","/","%",";",":",",",".","="};
-    for (int i = 0 ; i < 14 ; i++) {
+    char* TSLangSymbol[17] = {"(",")","{","}","+","-","*","/","%",";",":",",",".","=","<",">","!"};
+    for (int i = 0 ; i < 17 ; i++) {
         m_sTSLangSymbol.insert(TSString(TSLangSymbol[i]));
     }
 }

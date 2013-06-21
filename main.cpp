@@ -19,7 +19,7 @@ public:
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
-    TSString oneLine = "int TSFuc(int a, int b){int c = 0; c = a + b; return c;}  int a=TSFuc(5,6); print(\"What! Fack!!!!\");  print(\"Awesome!!!!\"); CA ca = new CA(); ca.haha(15,16); class CA{public: void haha(int a, int b){ if (a == 50) { print(\"hahaha\") }  string str = \"HelloClass\"; print(str);} private: int a = 50; int b;}  void        print  ( string   str )   { os_print(str); os_print(str);   }   void main(){ print( \"Hellod&^%#$*&&(*( )) World!\" );  }  int a=50; a = 60; int b = 50; print(\"HelloWorld!\");";
+    TSString oneLine = "int a=50; if(true){} for(int i=0; i<=10; i++){} int TSFuc(int a, int b){int c = 0; c = a + b; return c;}  int a=TSFuc(5,6); print(\"What! Fack!!!!\");  print(\"Awesome!!!!\"); CA ca = new CA(); ca.haha(15,16); class CA{public: void haha(int a, int b){ if (a == 50) { print(\"hahaha\") }  string str = \"HelloClass\"; print(str);} private: int a = 50; int b;}  void        print  ( string   str )   { os_print(str); os_print(str);   }   void main(){ print( \"Hellod&^%#$*&&(*( )) World!\" );  }  int a=50; a = 60; int b = 50; print(\"HelloWorld!\");";
     
     TSRegist tsr;
     TSEvent::GetSingleTon()->RegistEvent("os_print",(void*)&tsr,(TpInstEventFun)&TSRegist::print);

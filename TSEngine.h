@@ -26,7 +26,7 @@ private:
 
 //VM
 private:
-    TSMap<TSString, TSObject*> m_TypeList;
+    TSMap<TSString, TSObject*> m_TypeList; //用户定义的类型
     int m_iStackDeep;
     TSVector<TSVector<TSString>> m_vStacks;
 };
