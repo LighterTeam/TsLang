@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <map>
 #include <set>
 #include <iostream>
@@ -12,6 +13,7 @@ typedef std::wstring TSWString;
 #define TSMap std::map
 #define TSSet std::set
 #define TSVector std::vector
+#define TSList std::list
 
 // Error定义
 enum HRESULT {

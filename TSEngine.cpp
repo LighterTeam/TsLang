@@ -17,6 +17,20 @@ TSEngine::TSEngine() : m_iStackDeep(0)
     for (int i = 0 ; i < 17 ; i++) {
         m_sTSLangSymbol.insert(TSString(TSLangSymbol[i]));
     }
+    
+    char* TSLangCondition[] = {"if","else","switch"};
+    for (int i = 0 ; i < 3 ; i++) {
+        m_sTSLangCondition.insert(TSString(TSLangCondition[i]));
+    }
+    
+    char* TSLangLoop[] = {"while","do","for"};
+    for (int i = 0 ; i < 3 ; i++) {
+        m_sTSLangLoop.insert(TSString(TSLangLoop[i]));
+    }
+    
+    TSMap<TSString, TSObject*> vInstanceStack;
+    m_vInstanceStacks.push_back(vInstanceStack);
+    m_vCurStack = &(*m_vInstanceStacks.begin());
 }
 
 void TSEngine::TSPrint(TSString str){
@@ -35,6 +49,8 @@ HRESULT TSEngine::DoString(TSString &str)
 }
 
 HRESULT TSEngine::RunScript(TSVector<TSString>& runLine) {
+    TSMap<TSString, TSObject*> vInstanceStack;
+    
     int offset = 0;
     for (auto iter = runLine.begin(); iter != runLine.end(); iter++) {
         TSString& info = *iter;
@@ -43,13 +59,67 @@ HRESULT TSEngine::RunScript(TSVector<TSString>& runLine) {
             if(pObj->m_iType == TS_function){
                 TSFunctionObject* pOF = (TSFunctionObject*)pObj;
                 RunFunction(pOF, iter, offset);
+                
+                //如果pOF里面有返回值.则放到堆栈里.赋值给实例变量.
                 iter += offset;
+            }
+            else if (pObj->m_iType == TS_class){
+                TSClassObject* pOC = (TSClassObject*)pObj;
+                
             }
         } 
         else if (m_sTSLangBaseType.count(info)) { //如果是基础类型
-
+            TSBaseObject* pOB = new TSBaseObject();
+            RunCreateInstance(pOB, iter, offset);
+            vInstanceStack[pOB->m_sName] = pOB;
+            iter += offset;
+        }
+        else if (m_sTSLangCondition.count(info)) {
+            RunConditon(&vInstanceStack, iter, offset);
+            iter += offset;
+        }
+        else if (m_sTSLangLoop.count(info)) {
+            RunLoop(&vInstanceStack, iter, offset);
+            iter += offset;
         }
     }
+    
+    m_vInstanceStacks.push_back(vInstanceStack);
+    return S_OK;
+}
+
+HRESULT TSEngine::RunConditon(TSMap<TSString, TSObject*>* pSS, TSVector<TSString>::iterator& iter, int& offset){
+    int index = 0;
+    
+    
+    
+    
+    
+    return S_OK;
+}
+
+HRESULT TSEngine::RunLoop(TSMap<TSString, TSObject*>* pSS, TSVector<TSString>::iterator& iter, int& offset){
+    
+       
+    
+    
+    
+    return S_OK;
+}
+
+HRESULT TSEngine::RunCreateInstance(TSBaseObject* pOB, TSVector<TSString>::iterator& iter, int& offset){
+    if ( *(iter + 2) == "=") {
+        pOB->m_iType = GetType(*iter);
+        pOB->m_sName = *(iter + 1);
+        pOB->m_Value = *(iter + 3);
+        offset = 5;
+    }
+    else {
+        pOB->m_iType = GetType(*iter);
+        pOB->m_sName = *(iter + 1);
+        offset = 3;
+    }
+    
     return S_OK;
 }
 
@@ -297,7 +367,6 @@ HRESULT TSEngine::DoLanguage(std::vector<TSString>& fileTranslate, TSVector<TSSt
             }
         }
     }
-    m_vStacks.push_back(runLine);
     TSPrint("====================================================================");
     for (int i = 0 ; i < runLine.size(); i++) {
         TSPrint(runLine[i]);
@@ -313,7 +382,7 @@ TSFunctionObject* TSEngine::ProcessFunc(std::vector<TSString>::iterator& iter, i
     
     int i = 2;
     int stack = 0;
-    
+       
     bool bParaOnce = true;
     
     bool bParaOnce_PO = true;
