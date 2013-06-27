@@ -51,8 +51,8 @@ HRESULT TSEngine::DoString(TSString &str)
 HRESULT TSEngine::RunScript(TSVector<TSString>& runLine) {
     TSMap<TSString, TSObject*> vInstanceStack;
     
-    int offset = 0;
     for (auto iter = runLine.begin(); iter != runLine.end(); iter++) {
+        int offset = 0;
         TSString& info = *iter;
         if(m_TypeList.count(info)){ //如果是自定义的类型
             TSObject* pObj = m_TypeList[info];
@@ -99,7 +99,7 @@ HRESULT TSEngine::RunConditon(TSMap<TSString, TSObject*>* pSS, TSVector<TSString
 }
 
 HRESULT TSEngine::RunLoop(TSMap<TSString, TSObject*>* pSS, TSVector<TSString>::iterator& iter, int& offset){
-    
+    int index = 0;
        
     
     
