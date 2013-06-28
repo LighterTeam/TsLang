@@ -13,6 +13,10 @@ public:
     
     HRESULT RunConditon(std::map<TSString, TSObject *> *pSS, std::vector<TSString>::iterator &iter, int &offset);
     HRESULT RunLoop(std::map<TSString, TSObject *> *pSS, std::vector<TSString>::iterator &iter, int &offset);
+
+
+    HRESULT isStackName(std::list<std::map<TSString, TSObject *> *> &sCurSs, TSString sName);
+    HRESULT getStackObject(std::list<std::map<TSString, TSObject *> *> &sCurSs, TSString sName, TSObject **pObj);
 private:
     HRESULT RunCreateInstance(TSBaseObject *pOB, std::vector<TSString>::iterator &iter, int &offset);
     HRESULT CompilationLanguage(TSString &str, std::vector<TSString> &fileTranslate);

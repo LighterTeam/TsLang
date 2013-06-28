@@ -18,7 +18,9 @@ typedef std::wstring TSWString;
 // Error定义
 enum HRESULT {
     S_OK,
-    S_ERROR
+    S_ERROR,
+    S_True,
+    S_False,
 };
 
 // 定义TS实例类型

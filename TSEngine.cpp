@@ -88,19 +88,85 @@ HRESULT TSEngine::RunScript(TSVector<TSString>& runLine) {
     return S_OK;
 }
 
+HRESULT TSEngine::isStackName(TSList<TSMap<TSString, TSObject*>*>& sCurSs, TSString sName) {
+    for (auto iter = sCurSs.begin(); iter != sCurSs.end(); iter++) {
+        TSMap<TSString, TSObject*>& info = *(*iter);
+        if (info.count(sName)) {
+            return S_True;
+        }
+    }
+    return S_False;
+}
+
+HRESULT TSEngine::getStackObject(TSList<TSMap<TSString, TSObject*>*>& sCurSs, TSString sName, TSObject** pObj) {
+    for (auto iter = sCurSs.begin(); iter != sCurSs.end(); iter++) {
+        TSMap<TSString, TSObject*>& info = *(*iter);
+        if (info.count(sName)) {
+            pObj = &info[sName];
+            return S_True;
+        }
+    }
+    return S_False;
+}
+
 HRESULT TSEngine::RunConditon(TSMap<TSString, TSObject*>* pSS, TSVector<TSString>::iterator& iter, int& offset){
+    TSList<TSMap<TSString, TSObject*>*> sAllSs;
+    sAllSs.push_back(pSS);
+    
+    TSMap<TSString, TSObject*>* psSS = nullptr;
     int index = 0;
     
-    
-    
-    
-    
+    if (*iter == "if") {    
+        while(true){
+            TSString& info = *(iter+index);
+            index ++;
+            if (info == "{") {
+                psSS = new TSMap<TSString, TSObject*>();
+                sAllSs.push_back(psSS);
+            }
+            else if (info == "}") {
+                delete psSS;
+                sAllSs.pop_back();
+                psSS = nullptr;
+                break;
+            }
+            else {
+                //判断类型关键字.可能有声明
+                if (m_sTSLangBaseType.count(info)) {
+                    TSBaseObject* pOB = new TSBaseObject();
+                    RunCreateInstance(pOB, iter, offset);
+                    (*psSS)[pOB->m_sName] = pOB;
+                }
+                //判断名字使用.可能是赋值操作或者怎样
+                else if (isStackName(sAllSs, info) == S_True) {
+                    TSObject* pObj = nullptr;
+                    getStackObject(sAllSs, info, &pObj);
+                    if(pObj != nullptr) {
+                        switch(pObj->m_iType) {
+                        case TS_int:    
+                            
+                            break;
+                        case TS_float:
+                            
+                            break;
+                        }
+                    }
+                }
+                //判断函数类型.可能是函数调用
+                else if (m_TypeList.count(info)) {
+                    
+                }
+            }
+        }  
+        offset = index;
+    }
+
     return S_OK;
 }
 
 HRESULT TSEngine::RunLoop(TSMap<TSString, TSObject*>* pSS, TSVector<TSString>::iterator& iter, int& offset){
     int index = 0;
-       
+    
     
     
     
@@ -112,12 +178,12 @@ HRESULT TSEngine::RunCreateInstance(TSBaseObject* pOB, TSVector<TSString>::itera
         pOB->m_iType = GetType(*iter);
         pOB->m_sName = *(iter + 1);
         pOB->m_Value = *(iter + 3);
-        offset = 5;
+        offset = 4;
     }
     else {
         pOB->m_iType = GetType(*iter);
         pOB->m_sName = *(iter + 1);
-        offset = 3;
+        offset = 2;
     }
     
     return S_OK;
