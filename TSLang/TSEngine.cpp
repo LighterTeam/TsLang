@@ -88,9 +88,9 @@ HRESULT TSEngine::RunScript(TSVector<TSString>& runLine) {
     return S_OK;
 }
 
-HRESULT TSEngine::isStackName(TSList<TSMap<TSString, TSObject*>*>& sCurSs, TSString sName) {
+HRESULT TSEngine::isStackName(TSList<TSMap<TSString, TSObject*>>& sCurSs, TSString sName) {
     for (auto iter = sCurSs.begin(); iter != sCurSs.end(); iter++) {
-        TSMap<TSString, TSObject*>& info = *(*iter);
+        TSMap<TSString, TSObject*>& info = (*iter);
         if (info.count(sName)) {
             return S_True;
         }
@@ -98,11 +98,11 @@ HRESULT TSEngine::isStackName(TSList<TSMap<TSString, TSObject*>*>& sCurSs, TSStr
     return S_False;
 }
 
-HRESULT TSEngine::getStackObject(TSList<TSMap<TSString, TSObject*>*>& sCurSs, TSString sName, TSObject** pObj) {
+HRESULT TSEngine::getStackObject(TSList<TSMap<TSString, TSObject*>>& sCurSs, TSString sName, TSObject** pObj) {
     for (auto iter = sCurSs.begin(); iter != sCurSs.end(); iter++) {
-        TSMap<TSString, TSObject*>& info = *(*iter);
+        TSMap<TSString, TSObject*>& info = (*iter);
         if (info.count(sName)) {
-            pObj = &info[sName];
+            *pObj = info[sName];
             return S_True;
         }
     }
@@ -110,32 +110,40 @@ HRESULT TSEngine::getStackObject(TSList<TSMap<TSString, TSObject*>*>& sCurSs, TS
 }
 
 HRESULT TSEngine::RunConditon(TSMap<TSString, TSObject*>* pSS, TSVector<TSString>::iterator& iter, int& offset){
-    TSList<TSMap<TSString, TSObject*>*> sAllSs;
-    sAllSs.push_back(pSS);
+    TSList<TSMap<TSString, TSObject*>> sAllSs;
+    sAllSs.push_back(*pSS);
     
     TSMap<TSString, TSObject*>* psSS = nullptr;
     int index = 0;
+
+    int iStackNum = 0;
     
     if (*iter == "if") {    
         while(true){
             TSString& info = *(iter+index);
             index ++;
             if (info == "{") {
-                psSS = new TSMap<TSString, TSObject*>();
-                sAllSs.push_back(psSS);
+                iStackNum ++;
+                TSMap<TSString, TSObject*> ss;
+                sAllSs.push_back(ss);
+                psSS = &sAllSs.back();
             }
             else if (info == "}") {
-                delete psSS;
+                iStackNum --;
                 sAllSs.pop_back();
-                psSS = nullptr;
-                break;
+                psSS = &sAllSs.back();
+                if (iStackNum <= 0) {
+                    break;
+                }
             }
             else {
                 //判断类型关键字.可能有声明
                 if (m_sTSLangBaseType.count(info)) {
                     TSBaseObject* pOB = new TSBaseObject();
-                    RunCreateInstance(pOB, iter, offset);
+                    int _index = index - 1;
+                    RunCreateInstance(pOB, iter, _index);
                     (*psSS)[pOB->m_sName] = pOB;
+                    index += _index;
                 }
                 //判断名字使用.可能是赋值操作或者怎样
                 else if (isStackName(sAllSs, info) == S_True) {
@@ -158,7 +166,7 @@ HRESULT TSEngine::RunConditon(TSMap<TSString, TSObject*>* pSS, TSVector<TSString
                 }
             }
         }  
-        offset = index;
+        offset = --index;
     }
 
     return S_OK;
@@ -174,15 +182,18 @@ HRESULT TSEngine::RunLoop(TSMap<TSString, TSObject*>* pSS, TSVector<TSString>::i
 }
 
 HRESULT TSEngine::RunCreateInstance(TSBaseObject* pOB, TSVector<TSString>::iterator& iter, int& offset){
-    if ( *(iter + 2) == "=") {
-        pOB->m_iType = GetType(*iter);
-        pOB->m_sName = *(iter + 1);
-        pOB->m_Value = *(iter + 3);
+
+    TSString info = *(iter + offset);
+
+    if ( *(iter + offset + 2) == "=") {
+        pOB->m_iType = GetType(*(iter + offset));
+        pOB->m_sName = *(iter + offset + 1);
+        pOB->m_Value = *(iter + offset + 3);
         offset = 4;
     }
     else {
-        pOB->m_iType = GetType(*iter);
-        pOB->m_sName = *(iter + 1);
+        pOB->m_iType = GetType(*(iter + offset));
+        pOB->m_sName = *(iter + offset + 1);
         offset = 2;
     }
     
